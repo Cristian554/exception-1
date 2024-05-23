@@ -48,11 +48,20 @@ public class Reservation {
 		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
 	}
 
-	public void updateDates(Date checkIn, Date checkOut) {
+	public String updateDates(Date checkIn, Date checkOut) {		
+		Date now = new Date(); // cria data de agora
+		if (checkIn.before(now) || checkOut.before(now)) {// se a data de check-in e check-out for antes de agora
+															// programa não aceita
+			return "Error in reservation: Reservation dates for update must be future dates";
+			
+		} if (!checkOut.after(checkIn)) {
+			
+			return "Error in reservation: Reservation dates for update must be future dates";
+		}			
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
+	    return null; // se retornar nulo por que nao deu nenhum erro
 	}
-
 	@Override
 	public String toString() {
 		return "Room "

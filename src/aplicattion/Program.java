@@ -7,7 +7,8 @@ import java.util.Scanner;
 
 import model.entities.Reservation;
 
-public class Program {
+public class Program { // PROGRAMA É RUIM POIS A VALIDAÇÃO DA RESERVA TEM QUE SER FEITO NA CLASSE
+						// RESERVA E NÃO EM OUTRA
 
 	public static void main(String[] args) throws ParseException { // quando esta o tratamento de exceção o compilador
 																	// reclama pois sdf.parse é uma exceção por isso a
@@ -38,19 +39,15 @@ public class Program {
 			System.out.print("Check-out Date (dd/MM/yyyy): ");
 			checkOut = sdf.parse(sc.next());
 
-			// ESSA É A MANEIRA RUIM DE TRATAR AS EXCESSÕES
-			Date now = new Date(); // cria data de agora
-			if (checkIn.before(now) || checkOut.before(now)) {// se a data de check-in e check-out for antes de agora
-																// programa não aceita
-				System.out.println("Error in reservation: Reservation dates for update must be future dates");
-			} else if (!checkOut.after(checkIn)) {
-				System.out.println("Error in reservation: Reservation dates for update must be future dates");
-			} else {
-				reservation.updateDates(checkIn, checkOut); // esse método é responsavel por atualizar as datas
+			String error = reservation.updateDates(checkIn, checkOut); // esse método é responsavel por atualizar as
+																		// datas
+			if (error != null) {
+				System.out.println("Error in reservation " + error); // se der diferente de nulo por que deu algum erro
+			} 
+			else {
 				System.out.println("Reservation" + reservation);
 			}
-
-			sc.close();
 		}
+		sc.close();
 	}
 }
