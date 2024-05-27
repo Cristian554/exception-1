@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import model.exceptions.DomainException;
+
 public class Reservation {
 
 	private Integer roomNumber;
@@ -12,7 +14,10 @@ public class Reservation {
 
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); // static por que só vai ser usado uma vez
 
-	public Reservation(Integer roomNumber, Date checkIn, Date checkOut) {
+	public Reservation(Integer roomNumber, Date checkIn, Date checkOut) throws DomainException {
+		if (!checkOut.after(checkIn)) { // Foi colocado a verificação de datas pois no exemplo tem no construtor a verificalção
+			throw new DomainException("Error in reservation: Reservation dates for update must be future dates"); 
+		}
 		this.roomNumber = roomNumber;
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
@@ -48,29 +53,26 @@ public class Reservation {
 		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
 	}
 
-	public String updateDates(Date checkIn, Date checkOut) {		
+	public void updateDates(Date checkIn, Date checkOut) throws DomainException { // para lançar uma exceção usar a
+																					// palavra throws
 		Date now = new Date(); // cria data de agora
-		if (checkIn.before(now) || checkOut.before(now)) {// se a data de check-in e check-out for antes de agora
-															// programa não aceita
-			return "Error in reservation: Reservation dates for update must be future dates";
-			
-		} if (!checkOut.after(checkIn)) {
-			
-			return "Error in reservation: Reservation dates for update must be future dates";
-		}			
-		this.checkIn = checkIn;
+		if (checkIn.before(now) || checkOut.before(now)) {
+			throw new DomainException("Error in reservation: Reservation dates for update must be future dates"); // esse
+																													// metodo
+																													// JAVA
+			// é quando os argumentos que você passa para o método eles são inválidos.
+		}
+		if (!checkOut.after(checkIn)) {
+			throw new DomainException("Error in reservation: Reservation dates for update must be future dates");
+		}
+		this.checkIn = checkIn; // lógica de atualizar as datas
 		this.checkOut = checkOut;
-	    return null; // se retornar nulo por que nao deu nenhum erro
+
 	}
+
 	@Override
 	public String toString() {
-		return "Room "
-	           + roomNumber 
-	           + ", check-in: " 
-	           + sdf.format(checkIn) 
-	           + ", checkout: " 
-	           + sdf.format(checkOut)
-	           + ", "
-			   + duration() + " nights";
+		return "Room " + roomNumber + ", check-in: " + sdf.format(checkIn) + ", checkout: " + sdf.format(checkOut)
+				+ ", " + duration() + " nights";
 	}
 }
